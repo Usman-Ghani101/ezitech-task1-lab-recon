@@ -27,6 +27,6 @@ Only my own local virtual machines were tested. Reconnaissance only, no exploita
 | 3000/tcp | http | Node.js app, OWASP Juice Shop |
 
 ## Files
-- `findings.txt`: open ports, technologies and potential entry points
+- `findings.txt`: open ports, technologies, potential entry points with impact and risk
 - `scans/nmap_scan_report.txt`: Nmap scan report summary
 - `screenshots/`: evidence of each step

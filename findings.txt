@@ -36,17 +36,65 @@ Other 65532 ports: closed.
 - Custom header: X-Recruiting: /#/jobs
 
 =====================================================
-4. POTENTIAL ENTRY POINTS (not tested yet, for later tasks)
+4. POTENTIAL ENTRY POINTS AND IMPACT
 =====================================================
-1. Login form at /#/login (email and password)             screenshot 12
-2. Search bar on the main page (user input)                screenshot 13
-3. /ftp directory, listed as disallowed in robots.txt
-4. /#/jobs page, hinted by the X-Recruiting header
+Note: nothing below was tested or exploited. Impact means what an attacker
+could possibly do IF the weakness exists. Risk is my estimate from recon only
+and must be confirmed in later tasks.
+
+1. Login form at /#/login (email and password)                screenshot 12
+   Impact: if authentication is weak or injectable, an attacker could log in
+           as another user or an admin and read or change that account's data.
+   Risk  : High
+
+2. Search bar on the main page (user input)                   screenshot 13
+   Impact: if input is not sanitised, an attacker could run script in a
+           victim's browser (XSS) and steal session data, or send crafted input
+           to the backend. Affects every user who opens a crafted link.
+   Risk  : High
+
+3. /ftp directory (disallowed in robots.txt)
+   Impact: files meant to be hidden may be downloadable without login, so
+           internal or confidential data could be exposed (information leak).
+   Risk  : Medium
+
+4. /#/jobs page (hinted by the X-Recruiting header)
+   Impact: shows an extra page and internal hints that help an attacker map
+           the app. Low direct damage, but it widens the attack surface.
+   Risk  : Low
+
 5. REST API behind the app (HEAD, GET, POST, PUT, DELETE, PATCH allowed)
+   Impact: if access control is missing, an attacker could read, change or
+           delete other users' data (broken access control), not only view it.
+   Risk  : High
+
 6. Wildcard CORS (Access-Control-Allow-Origin: *)
-7. SSH on port 22 (weak or guessable credentials risk)
-8. Same app exposed on ports 80 and 3000, over plain HTTP
-9. Ubuntu 21.10 is end-of-life, so outdated packages are possible
+   Impact: a malicious website opened by a victim could read responses from
+           this app in the victim's browser, which can leak data.
+   Risk  : Medium
+
+7. SSH on port 22 (OpenSSH 8.4p1)
+   Impact: guessable or weak passwords could give an attacker a shell on the
+           server, which means full control of the VM. Highest damage if it
+           succeeds, but needs valid credentials.
+   Risk  : High
+
+8. Same app on ports 80 and 3000, over plain HTTP
+   Impact: anyone on the same network can read logins, passwords and tokens
+           in transit (sniffing) or change traffic. Two ports also mean two
+           places to defend.
+   Risk  : Medium
+
+9. Apache httpd 2.4.48 (port 80)
+   Impact: an old version, so later security fixes are missing. Known bugs
+           could affect the web server. I have not checked any CVE yet.
+   Risk  : Medium (unconfirmed)
+
+10. Ubuntu 21.10 (end-of-life)
+   Impact: no more security updates, so known flaws in the OS or packages stay
+           open. An attacker who gets a foothold could use them to gain higher
+           privileges.
+   Risk  : Medium (unconfirmed)
 
 =====================================================
 5. EVIDENCE
