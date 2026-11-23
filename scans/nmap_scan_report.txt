@@ -1,0 +1,58 @@
+NMAP SCAN REPORT SUMMARY
+Target : 192.168.56.108 (OWASP Juice Shop VM, host-only network 192.168.56.0/24)
+Scanner: Kali Linux VM, 192.168.56.102, Nmap 7.99
+Date   : 22 Nov 2026
+Note   : This file is a clean transcription of the key results from my terminal
+         output. The original raw terminal output is in the screenshots folder
+         (06 to 10).
+
+---------------------------------------------------------------
+1) Host discovery
+   Command: nmap -sn 192.168.56.108/24
+   Result : 5 hosts up (192.168.56.1, .100, .102, .108, .110)
+   Only 192.168.56.108 (my Juice Shop VM) was scanned further.
+
+---------------------------------------------------------------
+2) Full TCP scan with versions and default scripts
+   Command: nmap -sV -sC -p- -oN nmap_full.txt 192.168.56.108
+   Scan time: about 92 seconds
+   Host is up (0.00072s latency). Not shown: 65532 closed tcp ports (reset)
+
+   PORT      STATE  SERVICE  VERSION
+   22/tcp    open   ssh      OpenSSH 8.4p1 Ubuntu 6ubuntu2.1 (Ubuntu Linux; protocol 2.0)
+   80/tcp    open   http     Apache httpd 2.4.48 ((Ubuntu))
+   3000/tcp  open   ppp?     (web application, answers HTTP 200 with the OWASP Juice Shop page)
+
+   Script results:
+   - ssh-hostkeys: RSA 3072, ECDSA 256, ED25519 256
+   - port 80: http-title = OWASP Juice Shop
+   - port 80: http-cors = HEAD GET POST PUT DELETE PATCH
+   - port 80: http-server-header = Apache/2.4.48 (Ubuntu)
+   - port 80: http-robots.txt = 1 disallowed entry: /ftp
+   - port 3000 headers seen: Access-Control-Allow-Origin: *,
+     X-Content-Type-Options: nosniff, X-Frame-Options: SAMEORIGIN,
+     Feature-Policy: payment 'self', X-Recruiting: /#/jobs
+   MAC Address: 08:00:27:01:42:0A (Oracle VirtualBox virtual NIC)
+   Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+---------------------------------------------------------------
+3) OS detection
+   Command: nmap -O -oN nmap_os.txt 192.168.56.108
+   Open ports: 22/tcp ssh, 80/tcp http, 3000/tcp ppp
+   Device type: general purpose | router
+   OS details: Linux 4.15 - 5.19, OpenWrt 21.02 (Linux 5.4),
+               MikroTik RouterOS 7.2 - 7.5 (Linux 5.6.3)
+   Network distance: 1 hop
+   Comment: Nmap could not decide on one OS. The VM console shows
+            "Ubuntu 21.10", so the guest OS is Ubuntu Linux.
+
+---------------------------------------------------------------
+4) HTTP headers
+   Command: curl -I http://192.168.56.108:3000
+   HTTP/1.1 200 OK
+   Access-Control-Allow-Origin: *
+   X-Content-Type-Options: nosniff
+   X-Frame-Options: SAMEORIGIN
+   Feature-Policy: payment 'self'
+   X-Recruiting: /#/jobs
+   Content-Type: text/html; charset=UTF-8

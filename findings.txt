@@ -1,0 +1,55 @@
+FINDINGS: LAB ENVIRONMENT AND BASELINE RECONNAISSANCE
+Project : Security Assessment of Brew & Bean Cafe Web Portal (Task 1)
+Date    : 22 Nov 2026
+Scope   : my own local VirtualBox lab only, host-only network 192.168.56.0/24
+
+=====================================================
+1. LAB ENVIRONMENT
+=====================================================
+Target VM   : "OWASP Juice Shop" (Ubuntu 21.10), IP 192.168.56.108
+Attacker VM : Kali Linux, IP 192.168.56.102
+Network     : both VMs on the same private host-only network
+Web app     : OWASP Juice Shop, http://192.168.56.108:3000
+Connectivity: ping from Kali to target works (0% packet loss)
+
+=====================================================
+2. OPEN PORTS AND SERVICES (Nmap 7.99, all 65535 TCP ports)
+=====================================================
+PORT      SERVICE   SOFTWARE / VERSION
+22/tcp    ssh       OpenSSH 8.4p1 Ubuntu 6ubuntu2.1 (protocol 2.0)
+80/tcp    http      Apache httpd 2.4.48 (Ubuntu), page title: OWASP Juice Shop
+3000/tcp  http      Node.js web app (Nmap labelled it "ppp?"), serves OWASP Juice Shop
+
+Other 65532 ports: closed.
+
+=====================================================
+3. IDENTIFIED TECHNOLOGIES
+=====================================================
+- OS: Ubuntu Linux (21.10 from the VM console; Nmap OS guess was inconclusive)
+- SSH server: OpenSSH 8.4p1
+- Web server: Apache 2.4.48
+- Application: OWASP Juice Shop (Node.js backend, Angular frontend, MIT licence
+  comment in the page source)
+- Protocol: HTTP only, no HTTPS
+- Response headers (port 3000): X-Content-Type-Options nosniff, X-Frame-Options
+  SAMEORIGIN, Feature-Policy payment 'self', Access-Control-Allow-Origin *
+- Custom header: X-Recruiting: /#/jobs
+
+=====================================================
+4. POTENTIAL ENTRY POINTS (not tested yet, for later tasks)
+=====================================================
+1. Login form at /#/login (email and password)             screenshot 12
+2. Search bar on the main page (user input)                screenshot 13
+3. /ftp directory, listed as disallowed in robots.txt
+4. /#/jobs page, hinted by the X-Recruiting header
+5. REST API behind the app (HEAD, GET, POST, PUT, DELETE, PATCH allowed)
+6. Wildcard CORS (Access-Control-Allow-Origin: *)
+7. SSH on port 22 (weak or guessable credentials risk)
+8. Same app exposed on ports 80 and 3000, over plain HTTP
+9. Ubuntu 21.10 is end-of-life, so outdated packages are possible
+
+=====================================================
+5. EVIDENCE
+=====================================================
+scans/nmap_scan_report.txt   summary of the scan results
+screenshots/                 terminal and browser screenshots of every step
